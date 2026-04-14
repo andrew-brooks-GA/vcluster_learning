@@ -59,7 +59,7 @@ You also clone the curriculum repository and use Claude Code as an AI mentor alo
 
 - **Socratic mentoring** -- Claude Code asks guiding questions instead of giving answers, calibrated to your demonstrated skill level. This supplements the static reflection prompts in the Notion milestone pages with interactive, adaptive questioning.
 - **Automated progress tracking** -- Claude Code maintains `LEARNER_STATE.md` in the repo, recording your concept proficiency, scaffolding levels, and self-assessments. This supplements (not replaces) the Notion Milestones database status tracking.
-- **Commit workflow** -- structured Git operations through Claude Code's `/commit` command.
+- **Commit workflow** -- structured Git operations through Claude Code.
 - **Session continuity** -- Claude Code reads your state at the start of each session and resumes where you left off.
 
 Both paths use the same Notion workspace described below. Git + Claude Code is a layer on top, not a replacement. See `git_claude_workflow_guide.md` for setup.

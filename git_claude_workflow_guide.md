@@ -35,7 +35,7 @@ cd vcluster_learning
 | `CLAUDE.md` | Instructions for Claude Code -- not learner-facing | (no equivalent) |
 | `.claude/rules/` | Socratic teaching methodology rules | Static reflection prompts in milestone pages |
 | `.claude/hooks/` | Session automation scripts | (no equivalent) |
-| `.claude/skills/` | Claude Code skill definitions (commit, state updates) | (no equivalent) |
+| `.claude/skills/` | Claude Code skill definitions (state and design updates) | (no equivalent) |
 | `.claude/settings.json` | Claude Code configuration | (no equivalent) |
 
 **Files you maintain:** `LEARNER_STATE.md` (updated by Claude Code on your behalf), and any vcluster.yaml and project files you create during milestones. Organize milestone work in project directories (e.g., `project-1/`, `project-2/`). The curriculum does not prescribe a rigid structure -- you will discover what organization works as part of the learning process.
@@ -109,7 +109,7 @@ When you believe you've met all requirements:
 
 ### Committing Your Work
 
-Use `/commit` through Claude Code for all git operations. Do not use raw `git commit` commands. This ensures consistent commit messages and avoids accidental commits of sensitive files (kubeconfigs, credentials).
+Ask Claude Code to commit your work rather than using raw `git commit` commands. This ensures consistent commit messages and avoids accidental commits of sensitive files (kubeconfigs, credentials).
 
 ---
 

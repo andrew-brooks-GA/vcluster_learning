@@ -60,4 +60,4 @@ Version control, Infrastructure as Code, and testing/validation are learning obj
 - **Premature introduction.** Don't introduce GitOps before the learner has configs worth versioning.
 - **Disconnected from context.** "You should write tests" teaches nothing. Connect to what they're building.
 - **Repeating basics.** A learner in Production Readiness already knows how to commit. Advance to branching strategy, config versioning, or rollback procedures.
-- **Suggesting raw git commands.** Always route through `/commit` for git operations.
+- **Suggesting raw git commands.** Always route git operations through Claude Code rather than giving raw commands.

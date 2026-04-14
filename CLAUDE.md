@@ -34,7 +34,7 @@ Learning mode educational insight blocks (`★ Insight` blocks) are suppressed i
 - **Each milestone builds on the last**: read the full project's milestone chain before advising on any single milestone.
 - **"Pressure you'll feel" sections** are the pedagogical core: they identify the concept the learner is meant to struggle with. Don't shortcut past these.
 - **Prefer incomplete examples over complete configs.** Drop-in configurations bypass the design thinking the milestone is meant to teach.
-- **Use `/commit` for all git operations** — never suggest raw `git commit` commands.
+- **Use Claude Code for all git operations** — ask Claude Code to commit rather than suggesting raw `git commit` commands.
 
 ## Socratic Pipeline and Teaching Framework
 
