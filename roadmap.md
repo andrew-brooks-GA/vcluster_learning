@@ -63,9 +63,31 @@ flowchart TD
         T1 --> T2 --> T3 --> T4 --> T5 --> T6
     end
 
-    style vc fill:#e8f5e9,stroke:#4caf50
-    style iac fill:#e3f2fd,stroke:#2196f3
-    style test fill:#fff3e0,stroke:#ff9800
+    VC1:::vcNode
+    VC2:::vcNode
+    VC3:::vcNode
+    VC4:::vcNode
+    VC5:::vcNode
+    IAC1:::iacNode
+    IAC2:::iacNode
+    IAC3:::iacNode
+    IAC4:::iacNode
+    IAC5:::iacNode
+    IAC6:::iacNode
+    T1:::testNode
+    T2:::testNode
+    T3:::testNode
+    T4:::testNode
+    T5:::testNode
+    T6:::testNode
+
+    classDef vcNode fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
+    classDef iacNode fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
+    classDef testNode fill:#fff3e0,stroke:#ff9800,color:#e65100
+
+    style vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
+    style iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
+    style test fill:#fff3e0,stroke:#ff9800,color:#e65100
 ```
 
 ---
@@ -92,10 +114,14 @@ flowchart TD
     M2 -.- IAC1
     M3 -.- T1
 
+    classDef ms fill:#ffffff,stroke:#9e9e9e,color:#212121
     classDef vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
     classDef iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
     classDef test fill:#fff3e0,stroke:#ff9800,color:#e65100
-    style p1 fill:#f5f5f5,stroke:#9e9e9e
+    M1:::ms
+    M2:::ms
+    M3:::ms
+    style p1 fill:#f5f5f5,stroke:#9e9e9e,color:#424242
 ```
 
 **Progress:** `○ M1` → `○ M2` → `○ M3`
@@ -127,10 +153,15 @@ flowchart TD
     M3 -.- VC1
     M4 -.- IAC2
 
+    classDef ms fill:#ffffff,stroke:#9e9e9e,color:#212121
     classDef vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
     classDef iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
     classDef test fill:#fff3e0,stroke:#ff9800,color:#e65100
-    style p2 fill:#f5f5f5,stroke:#9e9e9e
+    M1:::ms
+    M2:::ms
+    M3:::ms
+    M4:::ms
+    style p2 fill:#f5f5f5,stroke:#9e9e9e,color:#424242
 ```
 
 **Progress:** `○ M1` → `○ M2` → `○ M3` → `○ M4`
@@ -159,10 +190,14 @@ flowchart TD
     M2 -.- T1
     M3 -.- IAC1
 
+    classDef ms fill:#ffffff,stroke:#9e9e9e,color:#212121
     classDef vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
     classDef iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
     classDef test fill:#fff3e0,stroke:#ff9800,color:#e65100
-    style p3 fill:#f5f5f5,stroke:#9e9e9e
+    M1:::ms
+    M2:::ms
+    M3:::ms
+    style p3 fill:#f5f5f5,stroke:#9e9e9e,color:#424242
 ```
 
 **Progress:** `○ M1` → `○ M2` → `○ M3`
@@ -197,10 +232,16 @@ flowchart TD
     M4 -.- VC1
     M5 -.- IAC2
 
+    classDef ms fill:#ffffff,stroke:#9e9e9e,color:#212121
     classDef vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
     classDef iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
     classDef test fill:#fff3e0,stroke:#ff9800,color:#e65100
-    style p4 fill:#f5f5f5,stroke:#9e9e9e
+    M1:::ms
+    M2:::ms
+    M3:::ms
+    M4:::ms
+    M5:::ms
+    style p4 fill:#f5f5f5,stroke:#9e9e9e,color:#424242
 ```
 
 **Progress:** `○ M1` → `○ M2` → `○ M3` → `○ M4` → `○ M5`
@@ -232,11 +273,16 @@ flowchart TD
     M3 -.- T1
     M4 -.- ALL2
 
+    classDef ms fill:#ffffff,stroke:#9e9e9e,color:#212121
     classDef vc fill:#e8f5e9,stroke:#4caf50,color:#1b5e20
     classDef iac fill:#e3f2fd,stroke:#2196f3,color:#0d47a1
     classDef test fill:#fff3e0,stroke:#ff9800,color:#e65100
     classDef all fill:#fce4ec,stroke:#e91e63,color:#880e4f
-    style p5 fill:#f5f5f5,stroke:#9e9e9e
+    M1:::ms
+    M2:::ms
+    M3:::ms
+    M4:::ms
+    style p5 fill:#f5f5f5,stroke:#9e9e9e,color:#424242
 ```
 
 **Progress:** `○ M1` → `○ M2` → `○ M3` → `○ M4`
