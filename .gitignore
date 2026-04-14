@@ -1,0 +1,17 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Kubeconfig exports (may contain credentials)
+kubeconfig*
+*.kubeconfig
