@@ -1,6 +1,6 @@
 ---
 name: update-learner-state
-description: Update LEARNER_STATE.md with concept proficiency, scaffolding observations, and self-assessment data from this conversation
+description: Updates LEARNER_STATE.md with concept proficiency observations, scaffolding-level changes, self-assessment ratings (design / implementation / transfer confidence, 1-5 scale), Global Autonomy Level shifts at project boundaries, and current milestone position. Use at milestone completion, or whenever a learner demonstrates a scaffolding-level change on a tracked concept, or when crossing a project boundary. Includes a self-assessment gate that blocks milestone-completion writes until the learner provides ratings.
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read, Edit, Write

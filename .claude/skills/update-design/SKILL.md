@@ -1,6 +1,6 @@
 ---
 name: update-design
-description: Update the current project's DESIGN.md with new design decisions from this conversation
+description: Appends new infrastructure design decisions from the current conversation to the active project's DESIGN.md — new components, changed responsibilities, architectural choices, scope decisions, rejected alternatives. Use when a milestone produced design decisions not yet captured (typically after a Design Reviewer role has approved a configuration), or when the learner explicitly asks to document what they chose and why. Skips writing if no new decisions were explicitly agreed upon.
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read, Edit, Write, Glob

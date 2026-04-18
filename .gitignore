@@ -15,3 +15,6 @@ Thumbs.db
 # Kubeconfig exports (may contain credentials)
 kubeconfig*
 *.kubeconfig
+
+# Latency instrumentation log
+.claude/latency.log

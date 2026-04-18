@@ -15,9 +15,34 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Evaluate ONLY the latest assistant message for Socratic violations. Ignore all prior messages in the conversation history — even if they contain violations that were previously flagged. FAIL:ANTI-PATTERN-N if the LATEST response does any of: (1) Confirms a correct observation then specifies implementation details (exact CLI commands, config snippets, tool names the learner should discover), (2) Lists everything the learner needs as a summary handoff, (3) Names exact tools, commands, or configuration patterns the learner should discover themselves, (4) Makes an infrastructure design choice for the learner, (5) Would be equally valid word-for-word for any learner at any milestone — a passing response must reference the specific system, milestone, component, or decision the learner is working on. PASS if the LATEST response is any of: pure syntax/API/docs reference answer; explicit 'just tell me' request; asking Socratic questions (even if they hint at direction); meta-discussion about tooling/infrastructure/hooks/configuration; greetings/follow-ups; config review feedback on configs the learner already wrote and showed; recalling previously-made decisions; a response that opens with a [Opus|Sonnet|Haiku] tier block (non-pedagogical meta-commentary — always PASS); a response that names Kubernetes resource type names as factual vocabulary (Pod, Service, Namespace, PersistentVolumeClaim, ConfigMap, Secret, Deployment — naming these is always PASS); a response consisting primarily of questions ending in '?' (Socratic questions cannot violate Socratic anti-patterns regardless of what nouns they contain). Output PASS or FAIL:ANTI-PATTERN-N (where N is 1, 2, 3, or 4) followed by the specific violation.",
+            "type": "agent",
+            "model": "haiku",
+            "prompt": "SOURCE: .claude/rules/stop-criteria.md — mirror any edits in both places.\n\nYou are a Socratic compliance reviewer. Evaluate ONLY the latest assistant message against the rubric below. Ignore all prior messages in the conversation history — even if they contain violations that were previously flagged.\n\nAnti-patterns — any one matches = FAIL:\n1. Confirm + elaborate — Confirms a correct observation then specifies implementation details (exact CLI commands, config snippets, tool names the learner should discover).\n2. Summary handoff — Lists everything the learner needs as a summary handoff (\"So you need X, Y, and Z — ready to configure?\").\n3. Tool/command specification — Names exact tools, commands, or configuration patterns the learner should discover themselves.\n4. Design decision — Makes an infrastructure design choice for the learner instead of presenting the tradeoff.\n5. Generic response — Would be equally valid word-for-word for any learner at any milestone. A passing response must reference the specific system, milestone, component, or decision the learner is working on.\n\nExceptions — these are always PASS:\n- Pure syntax, API, or docs reference answer\n- Response to an explicit \"just tell me\" request\n- Asking Socratic questions (even if they hint at the direction)\n- Meta-discussion about tooling, infrastructure, hooks, or configuration\n- Greetings and yes/no follow-ups\n- Config review feedback on configs the learner already wrote and showed\n- Recalling previously-made decisions\n- A response that opens with an [Opus|Sonnet|Haiku] tier block (non-pedagogical meta-commentary — always PASS)\n- A response that names Kubernetes resource type names as factual vocabulary (Pod, Service, Namespace, PersistentVolumeClaim, ConfigMap, Secret, Deployment) — naming these is always PASS\n- A response consisting primarily of questions ending in ? (Socratic questions cannot violate Socratic anti-patterns regardless of what nouns they contain)\n\nAfter determining your verdict but before returning it, run this command so the verdict is captured in the latency log for heuristic evaluation:\n\n  bash -c 'printf \"%s stop-verdict %s len=%d\\n\" \"$(date +%s.%N)\" \"$VERDICT\" \"$LEN\" >> \"$CLAUDE_PROJECT_DIR/.claude/latency.log\"'\n\nwhere $VERDICT is either \"PASS\" or \"FAIL-N\" (N=anti-pattern number) and $LEN is the character length of the message you evaluated. Then output EXACTLY one of:\n- PASS\n- FAIL:ANTI-PATTERN-N where N is 1, 2, 3, 4, or 5, followed by the specific violation and a one-line suggested alternative Socratic question.",
             "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/latency-log.sh\" pre",
+            "onFailure": "warn"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/latency-log.sh\" post",
+            "onFailure": "warn"
           }
         ]
       }

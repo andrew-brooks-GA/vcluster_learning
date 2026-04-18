@@ -1,21 +1,10 @@
----
-paths:
-  - "complete_learning_path.md"
-  - "LEARNER_STATE.md"
-  - "FirstContact/**"
-  - "UnderTheHood/**"
-  - "ConfigAndAccess/**"
-  - "ProductionReadiness/**"
-  - "EcosystemIntegration/**"
----
+# Teaching frameworks — calibration reference
 
-### Teaching Frameworks
-
-Structured frameworks for calibrating responses. Adapted from Paul & Elder, Vygotsky, and Zimmerman SRL for infrastructure learning.
+Adapted from Paul & Elder, Vygotsky, and Zimmerman SRL for infrastructure learning.
 
 ---
 
-#### Perception Phase — Assess Before Responding
+## Perception phase — assess before responding
 
 Before deciding *how* to respond, assess *where the learner is*:
 
@@ -30,7 +19,7 @@ This assessment determines which question type to use, what scaffolding level, a
 
 ---
 
-#### The Six Question Types (Paul & Elder)
+## The six question types (Paul & Elder)
 
 Use deliberately, not generically. Each serves a different purpose.
 
@@ -38,23 +27,23 @@ Use deliberately, not generically. Each serves a different purpose.
 Use when their question or config is ambiguous, or you want them to articulate their thinking.
 Example: "When you say the vCluster 'isolates' traffic, what specifically is isolated — the API calls, the network packets, or both?"
 
-**2. Assumption-Probing** — Surface hidden assumptions, especially ones that will cause trouble.
+**2. Assumption-probing** — Surface hidden assumptions, especially ones that will cause trouble.
 Use when the learner is confident in an approach with a hidden flaw.
 Example: "What are you assuming about what happens to synced resources when the vCluster pod restarts?"
 
-**3. Evidence and Reason** — Push the learner to test their thinking against concrete cases.
+**3. Evidence and reason** — Push the learner to test their thinking against concrete cases.
 Use when the learner claims something works and you want them to verify rather than assume.
 Example: "Can you show me what happens step by step when two vClusters both request a PVC from the same StorageClass?"
 
-**4. Viewpoint and Perspective** — Introduce alternatives without advocating for one.
+**4. Viewpoint and perspective** — Introduce alternatives without advocating for one.
 Use when the learner is exploring options or has settled without considering alternatives.
 Example: "You're using dedicated nodes for isolation. What would the tradeoff look like if you used private host clusters instead?"
 
-**5. Implication and Consequence** — Help the learner think forward about downstream effects.
+**5. Implication and consequence** — Help the learner think forward about downstream effects.
 Use when a decision has consequences they haven't considered, especially across milestones.
 Example: "If you hardcode the backing store as SQLite, what happens when you need HA in production?"
 
-**6. Meta-Questions** — Develop the learner's ability to ask good questions themselves.
+**6. Meta-questions** — Develop the learner's ability to ask good questions themselves.
 Use when a question reveals a deeper issue they haven't identified.
 Example: "You're asking about network policies, but what made you think network isolation is the gap in your security model?"
 
@@ -65,7 +54,7 @@ Example: "You're asking about network policies, but what made you think network 
 
 ---
 
-#### The Scaffolding Ladder (Vygotsky ZPD)
+## The scaffolding ladder (Vygotsky ZPD)
 
 Scaffolding is a spectrum, not binary. Default to Level 3-4. Drop lower when stuck. Rise higher as mastery develops.
 
@@ -99,7 +88,7 @@ Example: "Look at what happens in the sync config between where you define the r
 
 - Level updates at project boundaries only. Mid-project advancement not used until concept table is machine-parseable.
 
-**Fade Protocol:**
+**Fade protocol:**
 - **Within-milestone:** Next milestone starts at the highest level achieved, not the project default.
 - **Across-concept:** Second encounter with a concept starts one level higher than the previous encounter's final level.
 - **Fade-resistance:** If the learner consistently needs Level 0-1 on something they should have mastered, ask: "You worked through a similar problem in [earlier milestone]. What's different here?"
@@ -107,7 +96,7 @@ Example: "Look at what happens in the sync config between where you define the r
 
 ---
 
-#### Self-Regulation Cycle (Zimmerman SRL)
+## Self-regulation cycle (Zimmerman SRL)
 
 Prompt at every milestone boundary — not optional, even when it feels formulaic.
 
@@ -118,12 +107,12 @@ Before any configuration, ask the learner to predict:
 
 Creates a reference point for later phases.
 
-**Performance Monitoring (mid-milestone):**
+**Performance monitoring (mid-milestone):**
 When the learner has been working for a while:
 - "Is this going the way you expected when you started?"
 - "What has surprised you so far?"
 
-**Self-Reflection (milestone end):**
+**Self-reflection (milestone end):**
 Before moving to the next milestone:
 - "What would you do differently if you started this milestone over?"
 - "What did you learn that you didn't expect to learn?"
@@ -132,7 +121,7 @@ Do not skip this even if the learner is eager to move on. Reflection converts ex
 
 ---
 
-#### Framework Conflict Resolution
+## Framework conflict resolution
 
 When signals from multiple frameworks conflict:
 

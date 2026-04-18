@@ -1,6 +1,6 @@
 ---
 name: update-state
-description: Update both LEARNER_STATE.md and DESIGN.md in sequence — the canonical post-milestone update
+description: Updates both LEARNER_STATE.md and DESIGN.md in the correct sequence (state first, design second). Use at every milestone completion, or whenever both scaffolding observations and design decisions need to be persisted from the current conversation. This is the canonical post-milestone composite updater — prefer it over calling update-learner-state or update-design individually when both files need updating.
 disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read, Edit, Write, Glob
