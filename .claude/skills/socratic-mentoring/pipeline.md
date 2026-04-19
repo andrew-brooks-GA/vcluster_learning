@@ -20,6 +20,8 @@ Design questions, architecture decisions, implementation guidance, milestone wor
 
 Meta-discussion (tooling, hooks, learning process), greetings, yes/no follow-ups, recalling previously-made decisions.
 
+**Also skip — clarification requests about the parent's previous question.** Messages like "I don't understand the question", "what do you mean", "can you rephrase", "what was the question" are not new discovery moments — they're a request for the parent to restate or unpack its own prior turn. The parent should respond directly (rephrase the prior question with more scaffolding or a concrete example) without spawning the drafter. Spawning the drafter on these typically results in an empty-`Learner's message:` prompt, because the parent (correctly) judges there's no new learner content to forward — but then the drafter has nothing to work from and emits a "looks empty" response. Skip the pipeline; rephrase directly.
+
 ## Syntax / API questions — two-step check
 
 If the question uses signal words ("how do I", "what does X return", "what's the syntax for", "how does X work"):
@@ -36,11 +38,12 @@ Run the pipeline on ALL responses where the learner is reasoning through how som
 
 ## Pre-pipeline: load context (required)
 
-Before spawning the Drafter, read `LEARNER_STATE.md` to identify the current state. The context block passed to the Drafter **must** include all three of:
+Before spawning the Drafter, read `LEARNER_STATE.md` to identify the current state. The context block passed to the Drafter **must** include all four of:
 
 1. The exact milestone name from the curriculum (e.g., "First Contact M1")
 2. The specific requirement the learner is currently working on
 3. Any concepts from the state file at Level 0-2 that are relevant to the learner's question
+4. The **milestone text block** from `complete_learning_path.md` — the full requirements / "Pressure you'll feel" / "Lifecycle pressure" / "After you finish" section for the current milestone, quoted verbatim. Fetch with `Grep` (locate the heading) followed by `Read` (with `offset` + `limit` to grab the section). This eliminates the drafter doing the same Grep+Read internally on every turn (~3s + ~5K tokens of unnecessary context per drafter call).
 
 A vague context injection ("working on First Contact") produces generic responses that then pass all Reviewer checks — specificity here is what makes the anti-pattern checks meaningful.
 
@@ -51,10 +54,13 @@ Use the `Agent` tool with `subagent_type: socratic-drafter`. Pass a prompt of th
 ```
 Current context: [exact milestone name] | [specific requirement being worked on] | [Level 0-2 concepts from active state file relevant to this question]
 
+Milestone text:
+[verbatim block from complete_learning_path.md for this milestone — requirements, "Pressure you'll feel", "Lifecycle pressure", "After you finish"]
+
 Learner's message: [their exact message]
 ```
 
-The Drafter's system prompt lives in `.claude/agents/socratic-drafter.md` — do not re-specify the rules here.
+The Drafter's system prompt lives in `.claude/agents/socratic-drafter.md` — do not re-specify the rules here. The drafter expects the milestone text in the prompt and will NOT re-fetch it from the curriculum.
 
 ## Stage 2: spawn the Reviewer
 
@@ -70,9 +76,10 @@ The Reviewer loads `.claude/rules/stop-criteria.md` for anti-pattern definitions
 ## Retry logic
 
 If the reviewer returns FAIL:
-1. Revise the draft using the reviewer's feedback (the parent can revise directly or re-spawn the drafter with the feedback appended).
+1. **Default: parent revises the draft directly** using the reviewer's feedback. Do not re-spawn the drafter. (Parent revision saves ~7-10s vs another drafter spawn; quality preserved on most cases since the reviewer's feedback is the same input the drafter would receive on a re-spawn.)
 2. Re-spawn the reviewer on the revised draft.
-3. Max 2 revision cycles (3 total drafts). After that, present a Level 4 open-ended question ("What's your current thinking on this?") rather than the best draft — the pipeline failing is not the moment for unsupervised Socratic judgment. The Stop hook serves as a final safety net.
+3. **Max 1 revision cycle (2 total drafts).** If the reviewer still returns FAIL after one revision, present a Level 4 open-ended question ("What's your current thinking on this?") rather than the best draft — the pipeline failing is not the moment for unsupervised Socratic judgment. The Stop hook serves as a final safety net.
+4. **Escalation path (rare):** If the parent has reason to believe a re-drafted (rather than parent-revised) version would meaningfully outperform — for example, the FAIL is a structural anti-pattern the parent's revision can't address through editing — the parent may re-spawn the drafter for the single allowed retry. This is the exception, not the default.
 
 ## Pipeline output
 
