@@ -18,3 +18,12 @@ kubeconfig*
 
 # Latency instrumentation log
 .claude/latency.log
+
+# Personal research artifacts produced by latency-analyze.sh,
+# extract-historical-drafts.py, and router-equivalence-report.py.
+# The scripts are committed; their outputs are user-local data.
+docs/latency-baseline-*.txt
+docs/latency-research-*.md
+docs/router-equivalence-*.md
+docs/historical-drafts*.json
+docs/parent-side-verdicts.json

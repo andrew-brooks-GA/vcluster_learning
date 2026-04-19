@@ -21,6 +21,19 @@ INPUT=$(cat)
 TOOL=$(printf '%s' "$INPUT" | grep -oE '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*"([^"]+)"$/\1/')
 SUBAGENT=$(printf '%s' "$INPUT" | grep -oE '"subagent_type"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*"([^"]+)"$/\1/')
 
-printf '%s %s %s %s\n' "$TS" "$PHASE" "${TOOL:--}" "${SUBAGENT:--}" >> "$LOG"
+# Cache-token capture (post phase only — input JSON may include usage block from Anthropic).
+# If Claude Code does not surface these to PostToolUse, fields stay empty and we skip them.
+CACHE_READ=""
+CACHE_WRITE=""
+if [ "$PHASE" = "post" ]; then
+  CACHE_READ=$(printf '%s' "$INPUT" | grep -oE '"cache_read_input_tokens"[[:space:]]*:[[:space:]]*[0-9]+' | head -1 | grep -oE '[0-9]+$')
+  CACHE_WRITE=$(printf '%s' "$INPUT" | grep -oE '"cache_creation_input_tokens"[[:space:]]*:[[:space:]]*[0-9]+' | head -1 | grep -oE '[0-9]+$')
+fi
+
+if [ -n "$CACHE_READ" ] || [ -n "$CACHE_WRITE" ]; then
+  printf '%s %s %s %s cache_read=%s cache_write=%s\n' "$TS" "$PHASE" "${TOOL:--}" "${SUBAGENT:--}" "${CACHE_READ:-0}" "${CACHE_WRITE:-0}" >> "$LOG"
+else
+  printf '%s %s %s %s\n' "$TS" "$PHASE" "${TOOL:--}" "${SUBAGENT:--}" >> "$LOG"
+fi
 
 exit 0
