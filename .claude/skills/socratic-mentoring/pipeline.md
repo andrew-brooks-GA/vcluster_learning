@@ -62,6 +62,28 @@ Learner's message: [their exact message]
 
 The Drafter's system prompt lives in `.claude/agents/socratic-drafter.md` — do not re-specify the rules here. The drafter expects the milestone text in the prompt and will NOT re-fetch it from the curriculum.
 
+## Pre-Stage 2: reviewer short-circuit
+
+Before spawning the Reviewer, inspect the Drafter's output. If the draft consists entirely of question-ending sentences, skip the Reviewer — the rubric in `.claude/rules/stop-criteria.md` already PASSes a response consisting primarily of questions ending in `?`, so round-tripping such a draft through the subagent is pure latency.
+
+**Criterion (conservative default).**
+
+1. Strip fenced code blocks and inline code spans from the draft body (content inside ``` ``` ``` or `` ` `` does not count toward sentence-terminator detection).
+2. Short-circuit **if and only if** the stripped text contains at least one `?` AND zero `.` or `!` characters.
+3. Otherwise, run the Reviewer normally.
+
+**Rationale.** A missed short-circuit is a small latency cost; a false short-circuit is caught by the Stop-hook safety net, which re-runs the same rubric post-turn. A looser rule like "majority questions" (`?` count ≥ `.` + `!` count) was considered and rejected: a leading declarative sentence is exactly where the "Confirm + elaborate" anti-pattern leaks in, so the conservative all-question rule is preferred over a majority rule that would admit mixed responses.
+
+**Logging.** When the short-circuit fires, append a line to the project's latency log via a `Bash` call so hit rate can be measured over time:
+
+```bash
+printf '%s short-circuit reviewer-skipped len=%d\n' "$(date +%s.%N)" "$DRAFT_LEN" >> "$CLAUDE_PROJECT_DIR/.claude/latency.log"
+```
+
+This coexists with the existing `latency-log.sh` format (different column layout, same file) — downstream analysis can filter on the `short-circuit` token.
+
+**Scope limit.** The short-circuit applies only to the **initial** Drafter output. After a FAIL → revision cycle (see Retry logic below), always run the Reviewer on the revised draft — the prior draft already failed, so the revision must be verified regardless of its surface shape.
+
 ## Stage 2: spawn the Reviewer
 
 Pass the Drafter's output to the `socratic-reviewer` subagent:
