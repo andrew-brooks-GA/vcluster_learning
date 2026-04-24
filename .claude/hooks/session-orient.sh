@@ -1,10 +1,28 @@
 #!/usr/bin/env bash
 # Hook: Session orientation
 # Event: SessionStart
-# Purpose: Emit relevant learner state summary from LEARNER_STATE.md.
+# Purpose: Emit a learner-facing reminder of how to work with the Socratic
+# mentor, plus the structured state summary from LEARNER_STATE.md consumed by
+# the mentor. Reminder fires once per calendar day (marker at
+# .claude/.session-marker) so it anchors each working day without repeating
+# across rapid session restarts.
 # Exit 0 = allow (this hook never blocks).
 
 STATE_FILE="${CLAUDE_PROJECT_DIR}/LEARNER_STATE.md"
+MARKER="${CLAUDE_PROJECT_DIR}/.claude/.session-marker"
+
+# Learner-facing reminder — once per calendar day.
+if [ ! -f "$MARKER" ] || [ "$(cat "$MARKER" 2>/dev/null)" != "$(date +%Y%m%d)" ]; then
+  echo "$(date +%Y%m%d)" > "$MARKER" 2>/dev/null || true
+  cat <<'BANNER'
+[MENTOR-HOWTO] Socratic mentoring is active.
+  - The mentor asks guiding questions rather than handing over CLI commands or vcluster.yaml keys.
+  - Say "just tell me" at any time to get a direct answer.
+  - When stuck, say what you tried and where it broke — specifics get better hints.
+  - Full methodology: see LEARNER_GUIDE.md (5-minute read, required for first-time learners).
+
+BANNER
+fi
 
 if [ ! -f "$STATE_FILE" ]; then
   echo "[ORIENT:session] State file not found: $STATE_FILE"

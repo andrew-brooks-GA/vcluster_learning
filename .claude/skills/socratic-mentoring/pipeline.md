@@ -1,8 +1,12 @@
-# Pipeline — when and how to run the Socratic drafter→reviewer sequence
+# Pipeline — when and how to run the Socratic reviewer
 
-The Drafter and Reviewer are defined as subagents in `.claude/agents/socratic-drafter.md` and `.claude/agents/socratic-reviewer.md`. Their prompts live there — this file only governs when to spawn them.
+The Reviewer is defined as a subagent in `.claude/agents/socratic-reviewer.md`. Its prompt lives there — this file only governs *when* to spawn it and how to handle FAIL verdicts.
 
-**Rubric duplication note:** For latency reasons (eliminating per-turn Read round-trips), the canonical anti-pattern rubric in `.claude/rules/stop-criteria.md` is duplicated into three places: `socratic-reviewer.md`, `socratic-drafter.md`, and the Stop hook `prompt` in `.claude/settings.json`. Edits to the rubric must be mirrored across all four files. Run `bash .claude/hooks/rubric-drift-check.sh` to verify the 5 anti-pattern names are present in every location.
+**Post-drafter-drop architecture (2026-04-23):** The main model drafts inline using the per-turn context pre-injected by `.claude/hooks/socratic-context-inject.sh` (UserPromptSubmit hook), then runs the draft through the Reviewer. Never output the draft directly — it must pass review first.
+
+**Stop-hook observability is disabled.** The Reviewer is the sole Socratic enforcement component; FAIL-rate observability is deferred.
+
+**Rubric duplication note:** The canonical anti-pattern rubric in `.claude/rules/stop-criteria.md` is duplicated into `socratic-reviewer.md` (the only mirror). Edits to the rubric must be mirrored across both files. Run `bash .claude/hooks/rubric-drift-check.sh` to verify the 5 anti-pattern headings are present in both locations.
 
 ## Global Autonomy Level check — first gate
 
@@ -20,7 +24,7 @@ Design questions, architecture decisions, implementation guidance, milestone wor
 
 Meta-discussion (tooling, hooks, learning process), greetings, yes/no follow-ups, recalling previously-made decisions.
 
-**Also skip — clarification requests about the parent's previous question.** Messages like "I don't understand the question", "what do you mean", "can you rephrase", "what was the question" are not new discovery moments — they're a request for the parent to restate or unpack its own prior turn. The parent should respond directly (rephrase the prior question with more scaffolding or a concrete example) without spawning the drafter. Spawning the drafter on these typically results in an empty-`Learner's message:` prompt, because the parent (correctly) judges there's no new learner content to forward — but then the drafter has nothing to work from and emits a "looks empty" response. Skip the pipeline; rephrase directly.
+**Also skip — clarification requests about the parent's previous question.** Messages like "I don't understand the question", "what do you mean", "can you rephrase", "what was the question" are not new discovery moments — they're a request for the parent to restate or unpack its own prior turn. The parent should respond directly (rephrase the prior question with more scaffolding or a concrete example) without spawning the reviewer.
 
 ## Syntax / API questions — two-step check
 
@@ -36,54 +40,52 @@ Note: "How do I configure X?" for a concept at Level 0-2 is a milestone design q
 
 Run the pipeline on ALL responses where the learner is reasoning through how something works — even short "clarification" replies. Questions like "what does this field do?" or "how does the syncer handle this?" are discovery moments for concepts the learner hasn't mastered, not recall moments. Small follow-ups are exactly where Socratic violations leak through.
 
-## Pre-pipeline: load context (required)
+## Pre-pipeline: context is pre-injected
 
-Before spawning the Drafter, read `LEARNER_STATE.md` to identify the current state. The context block passed to the Drafter **must** include all four of:
+The `socratic-context-inject.sh` UserPromptSubmit hook pre-computes and injects as `additionalContext`:
 
-1. The exact milestone name from the curriculum (e.g., "First Contact M1")
-2. The specific requirement the learner is currently working on
-3. Any concepts from the state file at Level 0-2 that are relevant to the learner's question
-4. The **milestone text block** from `complete_learning_path.md` — the full requirements / "Pressure you'll feel" / "Lifecycle pressure" / "After you finish" section for the current milestone, quoted verbatim. Fetch with `Grep` (locate the heading) followed by `Read` (with `offset` + `limit` to grab the section). This eliminates the drafter doing the same Grep+Read internally on every turn (~3s + ~5K tokens of unnecessary context per drafter call).
+1. The exact milestone name from `LEARNER_STATE.md` (e.g., "First Contact M1")
+2. Concepts at Level 0-2 from the state file's Concept Proficiency table
+3. The verbatim milestone text block from `complete_learning_path.md` (requirements, "Pressure you'll feel", "Lifecycle pressure", "After you finish")
+4. The project's DESIGN.md content if one exists (treated as authoritative — do not re-derive)
 
-A vague context injection ("working on First Contact") produces generic responses that then pass all Reviewer checks — specificity here is what makes the anti-pattern checks meaningful.
+Treat this injected context as authoritative. Do NOT re-Grep `complete_learning_path.md` or re-Read `LEARNER_STATE.md` on every turn — the hook has already done it. Only fall back to direct reads if the injected context is empty or obviously stale.
 
-## Stage 1: spawn the Drafter
+A vague draft ("working on First Contact") that makes no specific reference to the current milestone, component, or learner question will FAIL the Reviewer's anti-pattern 5 (Generic response) — specificity is required.
 
-Use the `Agent` tool with `subagent_type: socratic-drafter`. Pass a prompt of the form:
+## Drafting (inline, main model)
 
-```
-Current context: [exact milestone name] | [specific requirement being worked on] | [Level 0-2 concepts from active state file relevant to this question]
+When the pipeline is invoked, the main model composes the draft **internally** and embeds it in the reviewer's prompt argument. The draft is NOT visible output — it must never be printed as text before the reviewer runs. Specifically:
 
-Milestone text:
-[verbatim block from complete_learning_path.md for this milestone — requirements, "Pressure you'll feel", "Lifecycle pressure", "After you finish"]
+- Do NOT prefix your response with `Draft:`, `Here's my draft:`, `Drafting:`, or any similar label.
+- Do NOT stream the draft as visible text and then spawn the reviewer below it.
+- The first thing the learner sees after your tier block should be either the final validated response (on PASS) or nothing until the reviewer returns.
 
-Learner's message: [their exact message]
-```
+The draft itself must follow all rules in [guardrails.md](guardrails.md), the scaffolding ladder in [frameworks.md](frameworks.md), the role rules in [roles.md](roles.md), and the 5 anti-patterns in `.claude/rules/stop-criteria.md`.
 
-The Drafter's system prompt lives in `.claude/agents/socratic-drafter.md` — do not re-specify the rules here. The drafter expects the milestone text in the prompt and will NOT re-fetch it from the curriculum.
+## Stage: spawn the Reviewer
 
-## Stage 2: spawn the Reviewer
-
-Pass the Drafter's output to the `socratic-reviewer` subagent:
+Use the `Agent` tool with `subagent_type: socratic-reviewer`. The draft goes inside the Agent tool's `prompt` argument — it is not printed as visible text. Use a prompt of the form:
 
 ```
 Draft to review:
-[drafter's output]
+[main model's draft]
 ```
 
-The Reviewer loads `.claude/rules/stop-criteria.md` for anti-pattern definitions. It returns `PASS` or `FAIL: [anti-pattern and suggested alternative]`.
+The Reviewer enforces `.claude/rules/stop-criteria.md`. It returns `PASS` or `FAIL:ANTI-PATTERN-N` with a suggested alternative.
 
 ## Retry logic
 
 If the reviewer returns FAIL:
-1. **Default: parent revises the draft directly** using the reviewer's feedback. Do not re-spawn the drafter. (Parent revision saves ~7-10s vs another drafter spawn; quality preserved on most cases since the reviewer's feedback is the same input the drafter would receive on a re-spawn.)
+1. **Default: parent revises the draft directly** using the reviewer's feedback.
 2. Re-spawn the reviewer on the revised draft.
-3. **Max 1 revision cycle (2 total drafts).** If the reviewer still returns FAIL after one revision, present a Level 4 open-ended question ("What's your current thinking on this?") rather than the best draft — the pipeline failing is not the moment for unsupervised Socratic judgment. The Stop hook serves as a final safety net.
-4. **Escalation path (rare):** If the parent has reason to believe a re-drafted (rather than parent-revised) version would meaningfully outperform — for example, the FAIL is a structural anti-pattern the parent's revision can't address through editing — the parent may re-spawn the drafter for the single allowed retry. This is the exception, not the default.
+3. **Max 1 revision cycle (2 total drafts).** If the reviewer still returns FAIL after one revision, present a Level 4 open-ended question ("What's your current thinking on this?") rather than the best draft — the pipeline failing is not the moment for unsupervised Socratic judgment.
 
 ## Pipeline output
 
-Present the final output to the learner. Do not add meta-commentary about the pipeline process.
+After the reviewer returns PASS, output the validated response to the learner as your main text, with no label or header — not `Final:`, not `Response:`, not a restatement of what the reviewer approved. The learner should see the answer, not the plumbing.
+
+Do not add meta-commentary about the pipeline process at any point.
 
 ## Directive vs. Socratic examples
 

@@ -19,6 +19,9 @@ kubeconfig*
 # Latency instrumentation log
 .claude/latency.log
 
+# Per-calendar-day banner marker written by session-orient.sh.
+.claude/.session-marker
+
 # Personal research artifacts produced by latency-analyze.sh,
 # extract-historical-drafts.py, and router-equivalence-report.py.
 # The scripts are committed; their outputs are user-local data.

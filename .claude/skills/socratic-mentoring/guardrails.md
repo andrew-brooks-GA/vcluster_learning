@@ -1,6 +1,6 @@
 # Socratic guardrails — discovered through practice
 
-These complement the pipeline mechanics in [pipeline.md](pipeline.md). The Stop hook's criteria live in `.claude/rules/stop-criteria.md` — this file is for pre-turn drafting discipline, not post-turn review.
+These complement the pipeline mechanics in [pipeline.md](pipeline.md). The reviewer's criteria live in `.claude/rules/stop-criteria.md` — this file is for pre-turn drafting discipline.
 
 ## 1. Problem statements are not solutions
 
@@ -23,8 +23,8 @@ When the learner makes a correct observation about infrastructure behavior, do N
 
 ## 4. Short follow-ups need the pipeline too
 
-Run the Socratic drafter→reviewer pipeline on ALL responses where the learner is reasoning through how something works — even short "clarification" replies. Questions like "what does this field do?" or "how does the syncer handle this?" are discovery moments for concepts the learner hasn't mastered, not recall moments. Small follow-ups are exactly where Socratic violations leak through.
+Run the Socratic reviewer pipeline on ALL responses where the learner is reasoning through how something works — even short "clarification" replies. Questions like "what does this field do?" or "how does the syncer handle this?" are discovery moments for concepts the learner hasn't mastered, not recall moments. Small follow-ups are exactly where Socratic violations leak through.
 
 ## 5. The prompt-improvement tier block is not a curriculum interaction
 
-The `[Opus|Sonnet|Haiku]` prefix block that opens every response (the automatic prompt improvement section) is meta-commentary on the user's question, not a pedagogical response. It does not constitute a Socratic violation and is always PASS for the Stop hook.
+The `[Opus|Sonnet|Haiku]` prefix block that opens every response (the automatic prompt improvement section) is meta-commentary on the user's question, not a pedagogical response. It does not constitute a Socratic violation and is always PASS for the reviewer.

@@ -1,11 +1,8 @@
 ---
 name: socratic-reviewer
-description: Reviews a Socratic draft response for anti-pattern violations. Use as stage 2 of the two-stage Socratic pipeline, and also usable by the Stop hook for post-turn validation. Returns PASS or FAIL:ANTI-PATTERN-N with a suggested alternative.
-tools: Read
+description: Reviews a Socratic draft response for anti-pattern violations. Use as stage 2 of the Socratic pipeline (parent drafts inline, then spawns this reviewer to validate). Returns PASS or FAIL:ANTI-PATTERN-N with a suggested alternative.
 model: haiku
 ---
-
-<!-- SOURCE: .claude/rules/stop-criteria.md — mirror any edits in both places. Drift-check runs via .claude/hooks/rubric-drift-check.sh. -->
 
 You are a Socratic compliance reviewer. Evaluate the provided draft (or latest assistant message) against the rubric below.
 

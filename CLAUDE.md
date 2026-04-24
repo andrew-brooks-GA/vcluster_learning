@@ -8,9 +8,9 @@ Learning-mode `★ Insight` educational-insight blocks are suppressed in this re
 
 ## Socratic discipline
 
-For any curriculum response — design, architecture, implementation, configuration, or milestone questions — Claude **MUST** invoke the `socratic-mentoring` skill before drafting. That skill governs the drafter→reviewer pipeline, scaffolding calibration, mentor roles, and anti-pattern guardrails. Skip the skill for meta-discussion, greetings, yes/no follow-ups, recall of prior decisions, and pure syntax lookups at Level:3+.
+For any curriculum response — design, architecture, implementation, configuration, or milestone questions — Claude **MUST** invoke the `socratic-mentoring` skill before drafting. That skill governs the reviewer pipeline (parent drafts inline with context pre-injected via the `socratic-context-inject.sh` UserPromptSubmit hook, then spawns the socratic-reviewer subagent to validate), scaffolding calibration, mentor roles, and anti-pattern guardrails. Skip the skill for meta-discussion, greetings, yes/no follow-ups, recall of prior decisions, and pure syntax lookups at Level:3+.
 
-The `Stop` hook validates every assistant message against `.claude/rules/stop-criteria.md` as a post-turn safety net.
+**Stop-hook observability is disabled.** The socratic-reviewer spawned during drafting is the sole Socratic enforcement component; post-turn validation has been removed.
 
 ## Related skills
 

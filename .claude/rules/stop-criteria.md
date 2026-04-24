@@ -1,6 +1,6 @@
-# Stop-hook criteria — Socratic anti-pattern reviewer
+# Socratic anti-pattern criteria
 
-Single source of truth for post-turn Socratic compliance review. Consumed by the `Stop` hook and by the `socratic-reviewer` subagent.
+Single source of truth for Socratic compliance review. Consumed by the `socratic-reviewer` subagent during drafting. (Historical note: this file's name dates to when a `Stop` hook also consumed it; that hook has been removed.)
 
 ## Evaluation scope
 
